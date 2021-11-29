@@ -1,4 +1,6 @@
 <?php
+/** DATABASE SETUP **/
+require_once "local-config.php";
 // Initialize the session
 session_start();
 
@@ -8,6 +10,68 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
+if (isset($_POST["removeID"]) && $_POST["removeID"] != "") {
+  $remove_stmt = "DELETE FROM wantToWatchList WHERE docID=? AND userID=?;";
+  if($remove_watch = mysqli_prepare($link, $remove_stmt)){
+    mysqli_stmt_bind_param($remove_watch, "ii", $watchID_param, $userID_param);
+    $watchID_param = intval($_POST["removeID"]);
+    $userID_param = $_SESSION["userID"];
+    if(!mysqli_stmt_execute($remove_watch)){
+       echo "Failed to remove. Try again!";
+    }
+  }
+}
+if (isset($_POST["priority"])) {
+  $priority_stmt = "UPDATE wantToWatchList SET priority= ? WHERE docID=? AND userID=?;";
+  if($priority_watch = mysqli_prepare($link, $priority_stmt)){
+    mysqli_stmt_bind_param($priority_watch, "iii", $priority_param, $watchID_param, $userID_param);
+    $priority_param = intval($_POST["priority"]);
+    $watchID_param = intval($_POST["docID"]);
+    $userID_param = $_SESSION["userID"];
+    if(!mysqli_stmt_execute($priority_watch)){
+       echo "Failed to remove. Try again!";
+    }
+  }
+}
+if (isset($_POST["switchID"])) {
+  $insert_watched_stmt = "INSERT INTO watchedList(docID, userID, dateWatched) VALUES (?, ?, ?)";
+  if($insert_watched = mysqli_prepare($link, $insert_watched_stmt)){
+    mysqli_stmt_bind_param($insert_watched, "iis", $watchedID_param, $userID_param, $date_param);
+    $watchedID_param = intval($_POST["switchID"]);
+    $userID_param = $_SESSION["userID"];
+    $date_param = "00/00/0000";
+    if(!mysqli_stmt_execute($insert_watched)){
+      echo "Failed to add documentary to Watched List. Try again!";
+    }
+  }
+  $add_stmt = "Add wantToWatchList SET priority= ? WHERE docID=? AND userID=?;";
+  $remove_stmt = "DELETE FROM wantToWatchList WHERE docID=? AND userID=?;";
+  if($remove_watch = mysqli_prepare($link, $remove_stmt)){
+    mysqli_stmt_bind_param($remove_watch, "ii", $watchID_param, $userID_param);
+    $watchID_param = intval($_POST["switchID"]);
+    $userID_param = $_SESSION["userID"];
+    if(!mysqli_stmt_execute($remove_watch)){
+       echo "Failed to remove from Watch List. Try again!";
+    }
+  }
+
+}
+if (isset($_POST["order"]) && $_POST["order"] == "ASC"){
+    $res_query_watch     = "select * from wantToWatchList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . " ORDER BY priority;";
+}else if(isset($_POST["order"]) && $_POST["order"] == "DES"){
+    $res_query_watch     = "select * from wantToWatchList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . " ORDER BY priority DESC;";
+}else{
+    $res_query_watch     = "select * from wantToWatchList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . ";";   
+}
+$res_watch           = $link -> query($res_query_watch);
+if ($res_watch === false) {
+  die("MySQL database failed");
+}
+$data_watch = $res_watch->fetch_all(MYSQLI_ASSOC);
+if (isset($data_watch)) {
+    $watchList = count($data_watch);
+  }
+
 
 ?>
 
@@ -57,19 +121,64 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     </nav>
     <br>
     <h1>My Want to Watch List</h1>
-    <!-- Could have button below here redirect to index.php to add, could just paste the add movie php code here, or could just take this button out entirely and have user only add something on the index.php page-->
-    <a class="btn btn-success text-center">Add to My Want to Watch List</a>
-    <!-- div for each documentary in user's want to watch list (should repeat for each probably)-->
-    <div style="border:2px solid black; margin-top:20px; margin-left:15%; margin-right:15%;"> <!--div for each documentary...if there are multiple the div could repeat or something  -->
-      <img src="..." alt="documentary image" class="pull-left mr-2">
-      <h2>Synopsis: </h2> <!-- text should appear next to the image (image on left, text on right)-->
-      <p></p> <!-- Place synopsis in here -->
-      <h2>Reviews: </h2>
-      <p></p> <!-- Place reviews -->
-      <a href="writeReview.php" class="btn btn-primary text-center">Add a Review</a>
-      <!-- Either have users directly add to respective list when click on button (use php) and remove the link to respective page or just have them add it on the respective page -->
-      <br>
-      <br>
-    </div>
+        <form action ="want.php" method ="post">
+            <input type="hidden" name="order" value = "ASC"></input>
+            <button type="submit" class="btn btn-success">Ascending By Priority</button>
+        </form>
+        <br>
+        <form action ="want.php" method ="post">
+            <input type="hidden" name="order" value = "DES"></input>
+            <button type="submit" class="btn btn-success">Descending By Priority</button>
+        </form>
+    <?php if(count($data_watch)){
+ foreach ($data_watch as $doc) {
+  ?>
+  <div style="margin-left: 25%">
+        <div class="card" style="width: 66%">
+        <div class="card-body">
+            <h5 class="card-title"><?=$doc["title"]?></h5>
+            <h6 class="card-subtitle mb-2"><?=$doc["year"]?></h7>
+            <p class="card-text-center"><?=$doc["overview"]?></p>
+            <p class="card-text"><strong>Average Rating: <?=$doc["averageRating"]?></strong></p>
+            <p class="card-text"><strong>Current Watch Priority: <?=$doc["priority"]?></strong></p>
+            <form action="want.php" method="post">
+                <?php if(isset($_POST["order"])){ ?>
+                    <input type="hidden" name="order" value=<?=$_POST["order"]?>> </input>
+                <?php } ?>
+                <input type="hidden" value=<?=$doc["docID"]?> name="removeID"></input>
+                <button type="submit" class="btn btn-danger">Remove from Watch list</button>
+            </form>
+            <br>
+            <form action="want.php" method="post">
+                <?php if(isset($_POST["order"])){ ?>
+                    <input type="hidden" name="order" value=<?=$_POST["order"]?>> </input>
+                <?php } ?>
+                <input type="hidden" value=<?=$doc["docID"]?> name="switchID"></input>
+                <button type="submit" class="btn btn-success">Switch to Watched List!</button>
+            </form>
+            <br>
+            <form action="want.php" method="post">
+                <?php if(isset($_POST["order"])){ ?>
+                    <input type="hidden" name="order" value=<?=$_POST["order"]?>> </input>
+                <?php } ?>
+                <input type="hidden" value=<?=$doc["docID"]?> name="docID"></input>
+                <input type="number" name="priority" max = 10 min = 1 value=<?=$doc["priority"]?> ></input>
+                <button type="submit" class="btn btn-primary">Update Priority Value</button>                
+            </form>
+            <br>
+            <!-- <form action="detailed.php" method="post" class="mb-2 text-center">
+                <input type="hidden" value=<?=$db["docID"]?> name="reviews"></input>
+                <button type="submit" class="btn btn-primary">Reviews</button>
+            </form> -->
+        </div>
+        </div>
+</div>
+        <?php }
+    }else{ ?>
+            <h4>No documentaries added.</h4>
+        <?php
+        }
+        ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
   </body>
   </html>
