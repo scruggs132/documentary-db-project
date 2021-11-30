@@ -69,11 +69,10 @@ if (isset($_POST["search"])) {
   $search_stmt = "select docID, title, overview from documentaryTitleOverview NATURAL JOIN documentaryTitleYear where title LIKE ?;";
   if($search = mysqli_prepare($link, $search_stmt)){
     mysqli_stmt_bind_param($search, "s", $search_param);
-    $search_param = "%" . strtoupper($_POST["search"]) ."%";
+    $search_param = "%". $_POST["search"] ."%";
     if(mysqli_stmt_execute($search)){
         $data = array();
         mysqli_stmt_bind_result($search, $docID, $title, $overview);
-        mysqli_stmt_fetch($search);
         while (mysqli_stmt_fetch($search)) {
           $data[] = array(
             "docID" => $docID,
