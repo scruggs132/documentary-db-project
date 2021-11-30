@@ -40,7 +40,7 @@ if (isset($_POST["order"]) && $_POST["order"] == "recent"){
 }else if(isset($_POST["order"]) && $_POST["order"] == "oldest"){
     $res_query_watched     = "select * from watchedList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . " ORDER BY dateWatched;";
 }else{
-    $res_query_watched     = "select * from watchedList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . ";";   
+    $res_query_watched     = "select * from watchedList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . ";";
 }
 $res_watched           = $link -> query($res_query_watched);
 if ($res_watched === false) {
@@ -88,7 +88,7 @@ if (isset($data_watched)) {
                         <a class="nav-link" href="want.php">Want to Watch List</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="writeReview.php">Write a Review</a>
+                        <a class="nav-link" href="reset-password.php">Reset Password</a>
                     </li>
                 </ul>
                 <span class="navbar-text">
@@ -121,7 +121,7 @@ if (isset($data_watched)) {
             <p class="card-text"><strong>Average Rating: <?=$doc["averageRating"]?></strong></p>
             <?php if($doc["dateWatched"] != "0000-00-00"){ ?>
             <p class="card-text"><strong>Date Watched: <?=$doc["dateWatched"]?></strong></p>
-            <?php }else{ 
+            <?php }else{
                 ?>
             <p class="card-text"><strong>Add Date Watched Below</strong></p>
             <?php } ?>
@@ -136,7 +136,7 @@ if (isset($data_watched)) {
                 <?php } ?>
                 <input type="hidden" value=<?=$doc["docID"]?> name="dateID"></input>
                 <input type="date" name="date" value=<?=$doc["dateWatched"]?> ></input>
-                <button type="submit" class="btn btn-primary">Update Date Watched</button>                
+                <button type="submit" class="btn btn-primary">Update Date Watched</button>
             </form>
             <!-- <br>
             <form action="detailed.php" method="post" class="mb-2 text-center">

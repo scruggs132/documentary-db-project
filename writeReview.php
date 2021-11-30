@@ -45,7 +45,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                         <a class="nav-link" href="want.php">Want to Watch List</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="writeReview.php">Write a Review</a>
+                        <a class="nav-link" href="reset-password.php">Reset Password</a>
                     </li>
                 </ul>
                 <span class="navbar-text">

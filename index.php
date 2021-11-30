@@ -10,7 +10,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
-
 $watchList = array(0);
 $watchedList = array(0);
 
@@ -87,7 +86,7 @@ if (isset($_POST["search"])) {
     }
   }
 
-  
+
 $message = "";
 
 ?>
@@ -127,7 +126,7 @@ $message = "";
                         <a class="nav-link" href="want.php">My Want to Watch List</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="writeReview.php">Write a Review</a>
+                        <a class="nav-link" href="reset-password.php">Reset Password</a>
                     </li>
                 </ul>
                 <span class="navbar-text">
@@ -168,7 +167,7 @@ $message = "";
                 <input type="hidden" value=<?=$db["docID"]?> name="watchID"></input>
                 <?php if (!$selected_watch && !$selected_watched) {?>
                 <button type="submit" class="btn btn-primary">Add to Watch list</button>
-                
+
                 <?php } else if ($selected_watch){?>
                 <a class="btn btn-secondary">Already Added to Watch List!</a>
                 <?php }?>

@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, otherwise redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
@@ -101,7 +101,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             </div>
             <div class="form-group mx-auto" style="text-align:center;">
                 <input type="submit" class="btn btn-success" value="Change Password">
-                <a class="btn btn-danger ml-2" href="login.php">Back to Login</a>
+                <a class="btn btn-danger ml-2" href="login.php">Back to Home</a>
             </div>
         </form>
     </div>

@@ -61,7 +61,7 @@ if (isset($_POST["order"]) && $_POST["order"] == "ASC"){
 }else if(isset($_POST["order"]) && $_POST["order"] == "DES"){
     $res_query_watch     = "select * from wantToWatchList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . " ORDER BY priority DESC;";
 }else{
-    $res_query_watch     = "select * from wantToWatchList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . ";";   
+    $res_query_watch     = "select * from wantToWatchList NATURAL JOIN documentaryTitleYear NATURAL JOIN documentaryTitleOverview NATURAL JOIN documentaryInfo where userID =" . $_SESSION["userID"] . ";";
 }
 $res_watch           = $link -> query($res_query_watch);
 if ($res_watch === false) {
@@ -109,7 +109,7 @@ if (isset($data_watch)) {
                         <a class="nav-link active" href="want.php">Want to Watch List</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="writeReview.php">Write a Review</a>
+                        <a class="nav-link" href="reset-password.php">Reset Password</a>
                     </li>
                 </ul>
                 <span class="navbar-text">
@@ -163,7 +163,7 @@ if (isset($data_watch)) {
                 <?php } ?>
                 <input type="hidden" value=<?=$doc["docID"]?> name="docID"></input>
                 <input type="number" name="priority" max = 10 min = 1 value=<?=$doc["priority"]?> ></input>
-                <button type="submit" class="btn btn-primary">Update Priority Value</button>                
+                <button type="submit" class="btn btn-primary">Update Priority Value</button>
             </form>
             <br>
             <!-- <form action="detailed.php" method="post" class="mb-2 text-center">
