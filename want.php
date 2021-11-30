@@ -163,6 +163,19 @@ if (isset($data_watch)) {
                 <?php } ?>
                 <input type="hidden" value=<?=$doc["docID"]?> name="docID"></input>
                 <input type="number" name="priority" max = 10 min = 1 value=<?=$doc["priority"]?> ></input>
+                <!--
+                              DELIMITER $$
+              CREATE TRIGGER priorityError
+              BEFORE ASSERTION on wantToWatchList
+              BEGIN
+              IF priority NOT BETWEEN (1 AND 10)
+              ASSERTION wantToWatchList(priority)
+              VALUES (NULL);
+              				END IF
+              END
+              $$
+              DELIMITER ; 
+                -->
                 <button type="submit" class="btn btn-primary">Update Priority Value</button>
             </form>
             <br>
